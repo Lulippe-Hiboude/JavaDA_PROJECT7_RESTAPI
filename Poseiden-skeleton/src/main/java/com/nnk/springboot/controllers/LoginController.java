@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("app")
+//@RequestMapping("app")
 @RequiredArgsConstructor
 public class LoginController {
     private final UserRepository userRepository;
