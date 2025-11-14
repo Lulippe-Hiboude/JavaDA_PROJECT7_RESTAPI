@@ -21,21 +21,30 @@ public class RatingTests {
 
 	@Test
 	public void ratingTest() {
-		Rating rating = new Rating("Moodys Rating", "Sand PRating", "Fitch Rating", 10);
+		String moodysRating = "Moodys Rating";
+		String sandPRating = "Sand PRating";
+		String fitchRating = "Fitch Rating";
+		int orderNumber = 10;
+		Rating rating = Rating.builder()
+				.moodysRating(moodysRating)
+				.sandPRating(sandPRating)
+				.fitchRating(fitchRating)
+				.orderNumber(orderNumber)
+				.build();
 
 		// Save
 		rating = ratingRepository.save(rating);
 		Assert.assertNotNull(rating.getId());
-		Assert.assertTrue(rating.getOrderNumber() == 10);
+        Assert.assertEquals(10, (int) rating.getOrderNumber());
 
 		// Update
 		rating.setOrderNumber(20);
 		rating = ratingRepository.save(rating);
-		Assert.assertTrue(rating.getOrderNumber() == 20);
+        Assert.assertEquals(20, (int) rating.getOrderNumber());
 
 		// Find
 		List<Rating> listResult = ratingRepository.findAll();
-		Assert.assertTrue(listResult.size() > 0);
+        Assert.assertFalse(listResult.isEmpty());
 
 		// Delete
 		Integer id = rating.getId();
