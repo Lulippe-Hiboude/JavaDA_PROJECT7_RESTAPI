@@ -1,6 +1,7 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.BidList;
+import com.nnk.springboot.utils.AuthenticationUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
+
 
 @Controller
 public class BidListController {
@@ -20,6 +23,8 @@ public class BidListController {
     public String home(Model model)
     {
         // TODO: call service find all bids to show to the view
+        model.addAttribute("bidLists", new ArrayList<>());
+        model.addAttribute("username", AuthenticationUtil.getAuthenticatedUsername());
         return "bidList/list";
     }
 
