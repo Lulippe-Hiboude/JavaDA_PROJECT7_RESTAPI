@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,21 +22,29 @@ public class BidTests {
 
 	@Test
 	public void bidListTest() {
-		BidList bid = new BidList("Account Test", "Type Test", 10d);
+		//TODO Use .builder() instead of new BidList() to create test instances
+		BigDecimal bidQuantity = BigDecimal.valueOf(10d);
+		BidList bid = BidList.builder()
+				.account("Account Test")
+				.type("Type Test")
+				.bidQuantity(bidQuantity)
+				.build();
+
 
 		// Save
 		bid = bidListRepository.save(bid);
 		Assert.assertNotNull(bid.getBidListId());
-		Assert.assertEquals(bid.getBidQuantity(), 10d, 10d);
+		Assert.assertEquals(bid.getBidQuantity(), bidQuantity);
 
 		// Update
-		bid.setBidQuantity(20d);
+		BigDecimal bidQuantityUpdate = BigDecimal.valueOf(20d);
+		bid.setBidQuantity(bidQuantityUpdate);
 		bid = bidListRepository.save(bid);
-		Assert.assertEquals(bid.getBidQuantity(), 20d, 20d);
+		Assert.assertEquals(bid.getBidQuantity(), bidQuantityUpdate);
 
 		// Find
 		List<BidList> listResult = bidListRepository.findAll();
-		Assert.assertTrue(listResult.size() > 0);
+        Assert.assertFalse(listResult.isEmpty());
 
 		// Delete
 		Integer id = bid.getBidListId();
