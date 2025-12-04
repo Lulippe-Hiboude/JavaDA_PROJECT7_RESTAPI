@@ -2,52 +2,53 @@ package com.nnk.springboot;
 
 import com.nnk.springboot.domain.RuleName;
 import com.nnk.springboot.repositories.RuleNameRepository;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class RuleTests {
 
-	@Autowired
-	private RuleNameRepository ruleNameRepository;
+    @Autowired
+    private RuleNameRepository ruleNameRepository;
 
-	@Test
-	public void ruleTest() {
-		RuleName rule = RuleName.builder()
-				.name("Rule Name")
-				.description("Description")
-				.json("Json")
-				.template("Template")
-				.sqlStr("SQL")
-				.sqlPart("SQL Part")
-				.build();
+    @Test
+    public void ruleTest() {
+        RuleName rule = RuleName.builder()
+                .name("Rule Name")
+                .description("Description")
+                .json("Json")
+                .template("Template")
+                .sqlStr("SQL")
+                .sqlPart("SQL Part")
+                .build();
 
-		// Save
-		rule = ruleNameRepository.save(rule);
-		Assert.assertNotNull(rule.getId());
-        Assert.assertEquals("Rule Name", rule.getName());
+        // Save
+        rule = ruleNameRepository.save(rule);
+        assertNotNull(rule.getId());
+        assertEquals("Rule Name", rule.getName());
 
-		// Update
-		rule.setName("Rule Name Update");
-		rule = ruleNameRepository.save(rule);
-        Assert.assertEquals("Rule Name Update", rule.getName());
+        // Update
+        rule.setName("Rule Name Update");
+        rule = ruleNameRepository.save(rule);
+        assertEquals("Rule Name Update", rule.getName());
 
-		// Find
-		List<RuleName> listResult = ruleNameRepository.findAll();
-        Assert.assertFalse(listResult.isEmpty());
+        // Find
+        List<RuleName> listResult = ruleNameRepository.findAll();
+        assertFalse(listResult.isEmpty());
 
-		// Delete
-		Integer id = rule.getId();
-		ruleNameRepository.delete(rule);
-		Optional<RuleName> ruleList = ruleNameRepository.findById(id);
-		Assert.assertFalse(ruleList.isPresent());
-	}
+        // Delete
+        Integer id = rule.getId();
+        ruleNameRepository.delete(rule);
+        Optional<RuleName> ruleList = ruleNameRepository.findById(id);
+        assertFalse(ruleList.isPresent());
+    }
 }
