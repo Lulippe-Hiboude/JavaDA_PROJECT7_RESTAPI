@@ -1,0 +1,68 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  description: API pour la gestion des utilisateurs (DTO → Entity)
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080
+paths:
+  /user:
+    post:
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateDTO"
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "User successfully created"
+        '400':
+          description: "Bad Request - Invalid input"
+        '409':
+          description: "Conflict - User already exists"
+components:
+  schemas:
+    UserBaseDTO:
+      type: object
+      properties:
+        fullname:
+          type: string
+          maxLength: 125
+          pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ0-9 -]+$"
+          description: "Full name is required, max 125 characters, letters/numbers/spaces/hyphens only"
+        username:
+          type: string
+          maxLength: 125
+          pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ0-9 -]+$"
+          description: "Username is required, max 125 characters, letters/numbers/spaces/hyphens only"
+        role:
+          type: string
+          enum: [ADMIN, USER]
+          description: "Role is required: ADMIN or USER"
+      required:
+        - fullname
+        - username
+        - role
+    UserCreateDTO:
+      allOf:
+        - $ref: "#/components/schemas/UserBaseDTO"
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+              minLength: 8
+              maxLength: 125
+              pattern: "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&]).*$"
+              description: "the password must have at least 1 uppercase letter, 1 number, 1 special character and minimum 8 characters."
+
+
+
+  
