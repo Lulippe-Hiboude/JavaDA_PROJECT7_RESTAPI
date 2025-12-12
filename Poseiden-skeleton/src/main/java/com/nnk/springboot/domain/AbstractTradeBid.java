@@ -45,27 +45,27 @@ public abstract class AbstractTradeBid {
     @Length(max = 125, message = "book cannot be longer than 125 characters")
     private String book;
 
-    @Column(name = "creationName")
+    @Column(name = "creation_name")
     private String creationName;
 
-    @Column(name = "creationDate")
+    @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     @Column(name = "revisionName")
     private String revisionName;
 
-    @Column(name = "revisionDate")
+    @Column(name = "revision_date")
     private LocalDateTime revisionDate;
 
-    @Column(name = "dealName")
+    @Column(name = "deal_name")
     @Length(max = 125, message = "Deal Name cannot be longer than 125 characters")
     private String dealName;
 
-    @Column(name = "dealType")
+    @Column(name = "deal_type")
     @Length(max = 125, message = "Deal Type cannot be longer than 125 characters")
     private String dealType;
 
-    @Column(name = "sourceListId")
+    @Column(name = "source_list_id")
     private String sourceListId;
 
     @Column(name = "side")

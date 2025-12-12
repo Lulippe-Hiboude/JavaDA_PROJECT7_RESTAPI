@@ -1,9 +1,9 @@
 package com.nnk.springboot.mapper;
 
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.UserCreateDto;
-import com.nnk.springboot.dto.UserDto;
-import com.nnk.springboot.dto.UserUpdateDto;
+import com.nnk.springboot.dto.user.UserCreateDto;
+import com.nnk.springboot.dto.user.UserDto;
+import com.nnk.springboot.dto.user.UserUpdateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

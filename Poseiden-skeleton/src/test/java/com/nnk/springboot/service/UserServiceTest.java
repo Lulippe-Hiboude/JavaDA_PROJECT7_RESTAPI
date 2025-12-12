@@ -1,10 +1,11 @@
 package com.nnk.springboot.service;
 
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.UserCreateDto;
-import com.nnk.springboot.dto.UserDto;
-import com.nnk.springboot.dto.UserUpdateDto;
+import com.nnk.springboot.dto.user.UserCreateDto;
+import com.nnk.springboot.dto.user.UserDto;
+import com.nnk.springboot.dto.user.UserUpdateDto;
 import com.nnk.springboot.repositories.UserRepository;
+import com.nnk.springboot.service.impl.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +60,7 @@ class UserServiceTest {
         given(userRepository.findByUsername(username)).willReturn(Optional.empty());
         given(passwordEncoder.encode(password)).willReturn(hashedPassword);
         //when
-        userService.handleUserCreation(userCreateDto);
+        userService.handleEntityCreation(userCreateDto);
 
         //then
         verify(userRepository, (times(1))).save(userCaptor.capture());
@@ -93,7 +94,7 @@ class UserServiceTest {
                 .build();
         given(userRepository.findByUsername(username)).willReturn(Optional.of(existingUser));
         //when
-        assertThrows(EntityExistsException.class, () -> userService.handleUserCreation(userCreateDto));
+        assertThrows(EntityExistsException.class, () -> userService.handleEntityCreation(userCreateDto));
 
         //then
         verify(passwordEncoder, (times(0))).encode(any());
@@ -120,7 +121,7 @@ class UserServiceTest {
         given(userRepository.findById(userId)).willReturn(Optional.of(existingUser));
 
         //when
-        userService.handleUserDeletion(userId);
+        userService.handleEntityDeletion(userId);
         //then
         verify(userRepository, (times(1))).deleteById(userId);
     }
@@ -134,7 +135,7 @@ class UserServiceTest {
         given(userRepository.findById(userId)).willReturn(Optional.empty());
 
         //when & then
-        assertThrows(EntityNotFoundException.class, () -> userService.handleUserDeletion(userId));
+        assertThrows(EntityNotFoundException.class, () -> userService.handleEntityDeletion(userId));
         verify(userRepository, (times(0))).deleteById(userId);
     }
 
@@ -168,7 +169,7 @@ class UserServiceTest {
         given(userRepository.findAll()).willReturn(userList);
 
         //when
-        List<UserDto> userDtoList = userService.findAll();
+        List<UserDto> userDtoList = userService.findAllEntity();
 
         //then
         assertEquals(2, userDtoList.size());
@@ -188,7 +189,7 @@ class UserServiceTest {
         given(userRepository.findAll()).willReturn(userList);
 
         //when
-        List<UserDto> userDtoList = userService.findAll();
+        List<UserDto> userDtoList = userService.findAllEntity();
 
         //then
         assertEquals(0, userDtoList.size());
@@ -214,7 +215,7 @@ class UserServiceTest {
         given(userRepository.findById(id)).willReturn(Optional.of(existingUser));
 
         //when
-        final UserUpdateDto userUpdateDto = userService.getUserUpdateDto(id);
+        final UserUpdateDto userUpdateDto = userService.getEntityUpdateDto(id);
 
         //then
         assertEquals(fullname, userUpdateDto.getFullname());
@@ -232,7 +233,7 @@ class UserServiceTest {
         given(userRepository.findById(id)).willReturn(Optional.empty());
 
         //when & then
-        assertThrows(IllegalArgumentException.class, () -> userService.getUserUpdateDto(id));
+        assertThrows(IllegalArgumentException.class, () -> userService.getEntityUpdateDto(id));
     }
 
     @Test
@@ -269,7 +270,7 @@ class UserServiceTest {
         given(passwordEncoder.encode(updatedPassword)).willReturn(updatedHashedPassword);
 
         //when
-        userService.handleUserUpdate(userUpdateDto);
+        userService.handleEntityUpdate(userUpdateDto);
 
         //then
         verify(userRepository).save(userCaptor.capture());
@@ -311,7 +312,7 @@ class UserServiceTest {
         given(userRepository.findById(userUpdateDto.getId())).willReturn(Optional.of(existingUser));
 
         //when
-        userService.handleUserUpdate(userUpdateDto);
+        userService.handleEntityUpdate(userUpdateDto);
 
         //then
         verify(userRepository).save(userCaptor.capture());
@@ -352,7 +353,7 @@ class UserServiceTest {
         given(userRepository.findByUsername(updatedUsername)).willReturn(Optional.of(existingUser));
 
         //when
-        assertThrows(EntityExistsException.class, ()-> userService.handleUserUpdate(userUpdateDto));
+        assertThrows(EntityExistsException.class, ()-> userService.handleEntityUpdate(userUpdateDto));
         verify(userRepository, times(0)).save(any(User.class));
     }
 

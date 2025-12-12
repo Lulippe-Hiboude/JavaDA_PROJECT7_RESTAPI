@@ -32,13 +32,15 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/favicon.ico",
                                 "/",
-                                "/login",
-                                "/curvePoint/list",
-                                "/home"
+                                "/login"
                         ).permitAll()
                         .requestMatchers(
+                                "/home",
+                                "/bidList/list"
+                        ).hasAnyRole("ADMIN","USER")
+                        .requestMatchers(
                                 "/admin/home/**",
-                                "/bidList/list",
+                                "/curvePoint/list",
                                 "/user/**"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()

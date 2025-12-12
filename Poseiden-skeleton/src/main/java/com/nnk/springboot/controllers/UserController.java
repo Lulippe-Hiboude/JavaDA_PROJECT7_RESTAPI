@@ -1,8 +1,8 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.dto.UserCreateDto;
-import com.nnk.springboot.dto.UserUpdateDto;
-import com.nnk.springboot.service.UserService;
+import com.nnk.springboot.dto.user.UserCreateDto;
+import com.nnk.springboot.dto.user.UserUpdateDto;
+import com.nnk.springboot.service.impl.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("/list")
     public String getList(final Model model) {
         log.info("get all users");
-        model.addAttribute("users", userService.findAll());
+        model.addAttribute("users", userService.findAllEntity());
         return "user/list";
     }
 
@@ -43,7 +43,7 @@ public class UserController {
         }
 
         try {
-            userService.handleUserCreation(userCreateDTO);
+            userService.handleEntityCreation(userCreateDTO);
         } catch (EntityExistsException ex) {
             result.rejectValue("username", "error.user", ex.getMessage());
             return "user/add";
@@ -53,8 +53,8 @@ public class UserController {
     }
 
     @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable("id") final Integer id, Model model) {
-        model.addAttribute("user", userService.getUserUpdateDto(id));
+    public String showUpdateForm(@PathVariable("id") final Integer id, final Model model) {
+        model.addAttribute("user", userService.getEntityUpdateDto(id));
         return "user/update";
     }
 
@@ -67,7 +67,7 @@ public class UserController {
         }
 
         try {
-            userService.handleUserUpdate(userUpdateDto);
+            userService.handleEntityUpdate(userUpdateDto);
         } catch (EntityExistsException ex) {
             result.rejectValue("username", "error.user", ex.getMessage());
             return "user/update";
@@ -79,7 +79,7 @@ public class UserController {
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") final Integer id, final RedirectAttributes redirectAttributes) {
         try {
-            userService.handleUserDeletion(id);
+            userService.handleEntityDeletion(id);
             redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully");
         } catch (EntityNotFoundException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());

@@ -1,8 +1,5 @@
 package com.nnk.springboot.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,8 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import java.sql.Timestamp;
-
 @Entity
 @Table(name = "rating")
 @Data
@@ -21,28 +16,27 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 public class Rating {
-    // TODO: Map columns in data table RATING with corresponding java fields
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "moodysRating", length = 125)
+    @Column(name = "moodys_rating", length = 125)
     @NotBlank(message = "Moodys Rating is mandatory")
-    @Length(max = 125, message = "Moodys Rating cannot be longer than 125 characters" )
+    @Length(max = 125, message = "Moodys Rating cannot be longer than 125 characters")
     private String moodysRating;
 
-    @Column(name = "sandPRating", length = 125)
+    @Column(name = "sand_p_rating", length = 125)
     @NotBlank(message = "S&P Rating is mandatory")
-    @Length(max = 125, message = "SP Rating cannot be longer than 125 characters" )
+    @Length(max = 125, message = "SP Rating cannot be longer than 125 characters")
     private String sandPRating;
 
-    @Column(name = "fitchRating", length = 125)
+    @Column(name = "fitch_rating", length = 125)
     @NotBlank(message = "Fitch Rating is mandatory")
-    @Length(max = 125, message = "Fitch Rating cannot be longer than 125 characters" )
+    @Length(max = 125, message = "Fitch Rating cannot be longer than 125 characters")
     private String fitchRating;
 
-    @Column(name = "orderNumber")
+    @Column(name = "order_number")
     @NotNull(message = "Order number is mandatory")
     private Integer orderNumber;
 }

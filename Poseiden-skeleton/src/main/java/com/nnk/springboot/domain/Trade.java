@@ -18,25 +18,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class Trade extends AbstractTradeBid {
-    // TODO: Map columns in data table TRADE with corresponding java fields
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "TradeId")
-    private Integer tradeId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
-    @Column(name = "buyQuantity")
+    @Column(name = "buy_quantity")
     private BigDecimal buyQuantity;
 
-    @Column(name = "sellQuantity")
+    @Column(name = "sell_quantity")
     private BigDecimal sellQuantity;
 
-    @Column(name = "buyPrice")
+    @Column(name = "buy_price")
     private BigDecimal buyPrice;
 
-    @Column(name = "sellPrice")
+    @Column(name = "sell_price")
     private BigDecimal sellPrice;
 
-    @Column(name = "tradeDate")
+    @Column(name = "trade_date")
     private LocalDateTime tradeDate;
 }
