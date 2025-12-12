@@ -1,15 +1,16 @@
-package com.nnk.springboot.service;
+package com.nnk.springboot.service.impl;
 
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.UserCreateDto;
-import com.nnk.springboot.dto.UserDto;
-import com.nnk.springboot.dto.UserUpdateDto;
+import com.nnk.springboot.dto.user.UserCreateDto;
+import com.nnk.springboot.dto.user.UserDto;
+import com.nnk.springboot.dto.user.UserUpdateDto;
 import com.nnk.springboot.mapper.UserMapper;
 import com.nnk.springboot.repositories.UserRepository;
+import com.nnk.springboot.service.AbstractEntityService;
+import com.nnk.springboot.service.EntityService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,57 +22,57 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService {
+public class UserService extends AbstractEntityService<User, UserCreateDto, UserDto, UserUpdateDto>
+        implements EntityService<UserCreateDto, UserDto, UserUpdateDto> {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void handleUserCreation(final UserCreateDto userCreatedto) {
-        log.info("Handle user creation");
+    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
+        super(userRepository);
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    protected void processEntityCreation(final UserCreateDto userCreatedto) {
         userRepository.findByUsername(userCreatedto.getUsername())
                 .ifPresentOrElse(existingUser -> {
                             log.error("User already exists");
                             throw new EntityExistsException("the username " + userCreatedto.getUsername() + " is already taken");
                         },
-                        () -> createUser(userCreatedto));
+                        () -> super.createEntity(userCreatedto));
     }
 
-    public void handleUserDeletion(final Integer id) {
-        userRepository.findById(id)
-                .ifPresentOrElse(
-                        existingUser -> userRepository.deleteById(id),
-                        () -> {
-                            throw new EntityNotFoundException("the user with id " + id + " was not found");
-                        }
-                );
+    protected void handleError(final Integer id) {
+        throw new EntityNotFoundException("the user with id " + id + " was not found");
     }
 
-    public List<UserDto> findAll() {
-        return UserMapper.INSTANCE.toUserDtoList(userRepository.findAll());
+    protected List<UserDto> toDtoList(final List<User> users) {
+
+        return UserMapper.INSTANCE.toUserDtoList(users);
     }
 
-    public UserUpdateDto getUserUpdateDto(final Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-
+    protected UserUpdateDto getEntityUpdateDto(final User user) {
         return UserMapper.INSTANCE.toUserUpdateDto(user);
 
     }
 
-    public void handleUserUpdate(final UserUpdateDto userUpdateDto) {
+    protected void checkEntityValidity(final UserUpdateDto userUpdateDto) {
         Optional<User> existingUser = userRepository.findByUsername(userUpdateDto.getUsername());
         if (isUsernameInvalid(userUpdateDto, existingUser)) {
             throw new EntityExistsException("the username " + userUpdateDto.getUsername() + " is already taken");
         }
+    }
 
+    protected Integer getEntityId(final UserUpdateDto userUpdateDto) {
+        return userUpdateDto.getId();
+    }
+
+    protected User getUpdatedEntity(final UserUpdateDto userUpdateDto, final User userToUpdate) {
         BiFunction<UserUpdateDto, User, User> mapper = getMapper(userUpdateDto);
-
-        userRepository.findById(userUpdateDto.getId())
-                .ifPresent(userToUpdate -> userRepository.save(
-                                mapper.apply(userUpdateDto, userToUpdate))
-                );
+        return mapper.apply(userUpdateDto, userToUpdate);
     }
 
     private BiFunction<UserUpdateDto, User, User> getMapper(final UserUpdateDto userUpdateDto) {
@@ -85,10 +86,9 @@ public class UserService {
         };
     }
 
-    private void createUser(final UserCreateDto userCreateDto) {
+    protected User getEntity(final UserCreateDto userCreateDto) {
         final String hashedPassword = passwordEncoder.encode(userCreateDto.getPassword());
-        userRepository.save(UserMapper.INSTANCE.toUser(userCreateDto, hashedPassword));
-        log.debug("user created");
+        return UserMapper.INSTANCE.toUser(userCreateDto, hashedPassword);
     }
 
     private static boolean isUsernameInvalid(final UserUpdateDto userUpdateDto, final Optional<User> existingUser) {

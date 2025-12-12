@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +31,8 @@ public class CurvePointTests {
                 .curveId(10)
                 .term(term)
                 .value(value)
+                .asOfDate(LocalDateTime.now())
+                .creationDate(LocalDateTime.now())
                 .build();
 
         // Save

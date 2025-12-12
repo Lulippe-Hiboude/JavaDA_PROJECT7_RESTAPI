@@ -31,7 +31,7 @@ public class TradeTests {
 
         // Save
         trade = tradeRepository.save(trade);
-        assertNotNull(trade.getTradeId());
+        assertNotNull(trade.getId());
         assertEquals(tradeAccount, trade.getAccount());
 
         // Update
@@ -45,7 +45,7 @@ public class TradeTests {
         assertFalse(listResult.isEmpty());
 
         // Delete
-        Integer id = trade.getTradeId();
+        Integer id = trade.getId();
         tradeRepository.delete(trade);
         Optional<Trade> tradeList = tradeRepository.findById(id);
         assertFalse(tradeList.isPresent());

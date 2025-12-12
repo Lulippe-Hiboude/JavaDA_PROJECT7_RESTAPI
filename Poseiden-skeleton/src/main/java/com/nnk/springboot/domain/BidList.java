@@ -1,13 +1,11 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-//TODO deprecated since spring 5
-// import org.springframework.beans.factory.annotation.Required;
-// remove this import and prefer constructor injection over setter injection
-
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -15,24 +13,22 @@ import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "bidlist")
+@Table(name = "bid")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class BidList extends AbstractTradeBid{
-    // TODO: Map columns in data table BIDLIST with corresponding java fields
-
+public class BidList extends AbstractTradeBid {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "BidListId")
-    private Integer bidListId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
-    @Column(name = "bidQuantity")
+    @Column(name = "bid_quantity", nullable = false)
     @Digits(integer = 10, fraction = 2)
     private BigDecimal bidQuantity;
 
-    @Column(name = "askQuantity")
+    @Column(name = "ask_quantity")
     @Digits(integer = 10, fraction = 2)
     private BigDecimal askQuantity;
 
@@ -44,8 +40,8 @@ public class BidList extends AbstractTradeBid{
     @Digits(integer = 10, fraction = 2)
     private BigDecimal ask;
 
-    @Column(name = "bidListDate")
-    private LocalDateTime bidListDate;
+    @Column(name = "bid_date")
+    private LocalDateTime bidDate;
 
     @Column(name = "commentary")
     private String commentary;

@@ -33,7 +33,7 @@ class SecurityConfigurationTest {
     @DisplayName("Should return ok for user with role USER")
     @WithMockUser(username = "user", roles = "USER")
     void publicEndpointShouldBeAccessibleWithoutAdminRole() throws Exception {
-        mockMvc.perform(get("/curvePoint/list"))
+        mockMvc.perform(get("/bidList/list"))
                 .andExpect(status().isOk());
     }
 
@@ -41,7 +41,7 @@ class SecurityConfigurationTest {
     @DisplayName("Should return Forbidden for user with role USER")
     @WithMockUser(username = "user", roles = "USER")
     void protectedEndpointShouldReturnUnauthorizedWithoutAdminRole() throws Exception {
-        mockMvc.perform(get("/bidList/list"))
+        mockMvc.perform(get("/curvePoint/list"))
                 .andExpect(status().isForbidden());
 
     }
