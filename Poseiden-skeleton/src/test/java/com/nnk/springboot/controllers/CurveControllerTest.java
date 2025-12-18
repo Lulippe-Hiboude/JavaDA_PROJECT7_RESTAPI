@@ -98,7 +98,7 @@ class CurveControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/curvePoint/list"))
-                .andExpect(flash().attribute("successMessage", "CurvePoint deleted successfully"));
+                .andExpect(flash().attribute("successMessage", "curvePoint deleted successfully"));
     }
 
     @Test
