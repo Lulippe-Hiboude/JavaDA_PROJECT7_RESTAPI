@@ -125,7 +125,7 @@ class UserControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/user/list"))
-                .andExpect(flash().attribute("successMessage", "User deleted successfully"));
+                .andExpect(flash().attribute("successMessage", "user deleted successfully"));
     }
 
     @Test
