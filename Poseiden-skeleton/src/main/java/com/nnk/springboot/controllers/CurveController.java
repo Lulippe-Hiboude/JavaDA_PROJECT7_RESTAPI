@@ -1,11 +1,9 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.domain.CurvePoint;
 import com.nnk.springboot.dto.curve.CurvePointCreateDto;
 import com.nnk.springboot.dto.curve.CurvePointDto;
 import com.nnk.springboot.dto.curve.CurvePointUpdateDto;
-import com.nnk.springboot.service.impl.CurvePointService;
-import jakarta.persistence.EntityNotFoundException;
+import com.nnk.springboot.service.CurvePointService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -13,12 +11,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import static com.nnk.springboot.enums.ViewEnum.*;
 
 @Controller
 @Slf4j
 @RequestMapping("/curvePoint")
-public class CurveController extends AbstractEntityController<CurvePoint, CurvePointCreateDto, CurvePointDto, CurvePointUpdateDto> {
+public class CurveController extends AbstractEntityController<CurvePointCreateDto, CurvePointDto, CurvePointUpdateDto> {
 
     private final CurvePointService curvePointService;
 
@@ -31,10 +30,10 @@ public class CurveController extends AbstractEntityController<CurvePoint, CurveP
     public String submitCreateForm(@Valid @ModelAttribute("curvePoint") final CurvePointCreateDto curvePointCreateDto, final BindingResult result) {
         log.info("submit curve point creation form");
         if (result.hasErrors()) {
-            return getView("/add");
+            return getView(ADD.getValue());
         }
         curvePointService.handleEntityCreation(curvePointCreateDto);
-        return getRedirectedUrl("/list");
+        return getRedirectedUrl(LIST.getValue());
     }
 
     @Override
@@ -43,10 +42,10 @@ public class CurveController extends AbstractEntityController<CurvePoint, CurveP
                                final BindingResult result) {
 
         if (result.hasErrors()) {
-            return getView("/update");
+            return getView(UPDATE.getValue());
         }
         curvePointService.handleEntityUpdate(curvePointUpdateDto);
-        return getRedirectedUrl("/list");
+        return getRedirectedUrl(LIST.getValue());
     }
 
     @Override

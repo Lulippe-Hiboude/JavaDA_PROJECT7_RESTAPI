@@ -3,7 +3,7 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.dto.curve.CurvePointCreateDto;
 import com.nnk.springboot.dto.curve.CurvePointDto;
 import com.nnk.springboot.dto.curve.CurvePointUpdateDto;
-import com.nnk.springboot.service.impl.CurvePointService;
+import com.nnk.springboot.service.CurvePointService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

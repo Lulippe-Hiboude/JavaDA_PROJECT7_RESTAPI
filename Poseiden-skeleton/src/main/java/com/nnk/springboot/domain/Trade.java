@@ -1,6 +1,7 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,7 +24,8 @@ public class Trade extends AbstractTradeBid {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "buy_quantity")
+    @Column(name = "buy_quantity", nullable = false)
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal buyQuantity;
 
     @Column(name = "sell_quantity")

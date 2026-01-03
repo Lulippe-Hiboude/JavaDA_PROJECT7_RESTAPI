@@ -4,14 +4,16 @@ import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.dto.rating.RatingCreateDto;
 import com.nnk.springboot.dto.rating.RatingDto;
 import com.nnk.springboot.dto.rating.RatingUpdateDto;
+import com.nnk.springboot.mapper.RatingMapper;
 import com.nnk.springboot.repositories.RatingRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,15 +27,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class RatingServiceTest {
-    @InjectMocks
-    private RatingService ratingService;
+class RatingServiceImplTest {
+
+    private RatingServiceImpl ratingServiceImpl;
 
     @Mock
     private RatingRepository ratingRepository;
 
     @Captor
     private ArgumentCaptor<Rating> ratingCaptor;
+
+    @BeforeEach
+    void setUp() {
+        final RatingMapper ratingMapper = Mappers.getMapper(RatingMapper.class);
+        ratingServiceImpl = new RatingServiceImpl(ratingRepository, ratingMapper);
+    }
 
     @Test
     @DisplayName("Should create a new rating")
@@ -45,7 +53,7 @@ class RatingServiceTest {
         ratingCreateDto.setSandPRating("sandPRRating");
         ratingCreateDto.setOrderNumber(1);
         //when
-        ratingService.handleEntityCreation(ratingCreateDto);
+        ratingServiceImpl.handleEntityCreation(ratingCreateDto);
         //then
         verify(ratingRepository, times(1)).save(ratingCaptor.capture());
         final Rating rating = ratingCaptor.getValue();
@@ -56,8 +64,8 @@ class RatingServiceTest {
     }
 
     @Test
-    @DisplayName("should update existing rating except password")
-    void shouldUpdateExistingRatingExceptPassword() {
+    @DisplayName("should update existing rating")
+    void shouldUpdateExistingRating() {
         //given
         final String fitchRating = "fitchRating";
         final String moodysRating = "moodysRating";
@@ -87,7 +95,7 @@ class RatingServiceTest {
         given(ratingRepository.findById(id)).willReturn(Optional.of(existingRating));
 
         //when
-        ratingService.handleEntityUpdate(ratingUpdateDto);
+        ratingServiceImpl.handleEntityUpdate(ratingUpdateDto);
 
         //then
         verify(ratingRepository, times(1)).save(ratingCaptor.capture());
@@ -107,7 +115,7 @@ class RatingServiceTest {
         given(ratingRepository.findById(id)).willReturn(Optional.empty());
 
         //when & then
-        assertThrows(EntityNotFoundException.class, () -> ratingService.handleEntityDeletion(id));
+        assertThrows(EntityNotFoundException.class, () -> ratingServiceImpl.handleEntityDeletion(id));
         verify(ratingRepository, times(0)).deleteById(id);
     }
 
@@ -131,7 +139,7 @@ class RatingServiceTest {
         given(ratingRepository.findById(id)).willReturn(Optional.of(existingRating));
 
         //when
-        ratingService.handleEntityDeletion(id);
+        ratingServiceImpl.handleEntityDeletion(id);
 
         //then
         verify(ratingRepository, times(1)).deleteById(id);
@@ -158,7 +166,7 @@ class RatingServiceTest {
         given(ratingRepository.findAll()).willReturn(ratingList);
 
         //when
-        List<RatingDto> ratingDtoList = ratingService.findAllEntity();
+        List<RatingDto> ratingDtoList = ratingServiceImpl.findAllEntity();
 
         //then
         assertEquals(1, ratingDtoList.size());
@@ -172,7 +180,7 @@ class RatingServiceTest {
         given(ratingRepository.findAll()).willReturn(ratingList);
 
         //when
-        List<RatingDto> ratingDtoList = ratingService.findAllEntity();
+        List<RatingDto> ratingDtoList = ratingServiceImpl.findAllEntity();
 
         //then
         assertEquals(0, ratingDtoList.size());
@@ -198,7 +206,7 @@ class RatingServiceTest {
         given(ratingRepository.findById(id)).willReturn(Optional.of(rating));
 
         //when
-        final RatingUpdateDto ratingUpdateDto = ratingService.getEntityUpdateDto(id);
+        final RatingUpdateDto ratingUpdateDto = ratingServiceImpl.getEntityUpdateDto(id);
 
         //then
         assertEquals(ratingUpdateDto.getFitchRating(), rating.getFitchRating());

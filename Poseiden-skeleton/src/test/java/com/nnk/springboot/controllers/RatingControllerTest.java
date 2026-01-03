@@ -3,7 +3,7 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.dto.rating.RatingCreateDto;
 import com.nnk.springboot.dto.rating.RatingDto;
 import com.nnk.springboot.dto.rating.RatingUpdateDto;
-import com.nnk.springboot.service.impl.RatingService;
+import com.nnk.springboot.service.impl.RatingServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class RatingControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private RatingService ratingService;
+    private RatingServiceImpl ratingServiceImpl;
 
     @Test
     @WithMockUser(username = "Admin", roles = "ADMIN")
@@ -62,7 +62,7 @@ class RatingControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/rating/list"));
 
-        verify(ratingService).handleEntityCreation(any(RatingCreateDto.class));
+        verify(ratingServiceImpl).handleEntityCreation(any(RatingCreateDto.class));
     }
 
     @Test
@@ -86,7 +86,7 @@ class RatingControllerTest {
                 .andExpect(view().name("rating/add"))
                 .andExpect(model().attributeHasFieldErrors("rating", "fitchRating", "moodysRating", "sandPRating", "orderNumber"));
 
-        verify(ratingService, times(0)).handleEntityCreation(any(RatingCreateDto.class));
+        verify(ratingServiceImpl, times(0)).handleEntityCreation(any(RatingCreateDto.class));
     }
 
     @Test
@@ -110,7 +110,7 @@ class RatingControllerTest {
     void redirectToRatingListAfterThrowEntityNotFoundException() throws Exception {
         //given
         final int ratingId = 1;
-        doThrow(new EntityNotFoundException("rating not found")).when(ratingService).handleEntityDeletion(ratingId);
+        doThrow(new EntityNotFoundException("rating not found")).when(ratingServiceImpl).handleEntityDeletion(ratingId);
 
         //when & then
         mockMvc.perform(get("/rating/delete/" + ratingId)
@@ -138,7 +138,7 @@ class RatingControllerTest {
         ratingDto.setOrderNumber(orderNumber);
 
         final List<RatingDto> ratingDtoList = List.of(ratingDto);
-        given(ratingService.findAllEntity()).willReturn(ratingDtoList);
+        given(ratingServiceImpl.findAllEntity()).willReturn(ratingDtoList);
 
         //when & then
         mockMvc.perform(get("/rating/list")
@@ -166,7 +166,7 @@ class RatingControllerTest {
         ratingUpdateDto.setSandPRating(sandPRating);
         ratingUpdateDto.setOrderNumber(orderNumber);
 
-        given(ratingService.getEntityUpdateDto(id)).willReturn(ratingUpdateDto);
+        given(ratingServiceImpl.getEntityUpdateDto(id)).willReturn(ratingUpdateDto);
 
         //when
         mockMvc.perform(get("/rating/update/" + id)
@@ -203,7 +203,7 @@ class RatingControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/rating/list"));
 
-        verify(ratingService).handleEntityUpdate(ratingUpdateDto);
+        verify(ratingServiceImpl).handleEntityUpdate(ratingUpdateDto);
     }
 
     @Test
@@ -234,6 +234,6 @@ class RatingControllerTest {
                 .andExpect(view().name("rating/update"))
                 .andExpect(model().attributeHasFieldErrors("rating", "fitchRating", "moodysRating", "sandPRating", "orderNumber"));
 
-        verify(ratingService, times(0)).handleEntityUpdate(ratingUpdateDto);
+        verify(ratingServiceImpl, times(0)).handleEntityUpdate(ratingUpdateDto);
     }
 }

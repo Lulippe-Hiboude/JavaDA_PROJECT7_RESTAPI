@@ -1,6 +1,7 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.service.AbstractEntityService;
+import com.nnk.springboot.service.EntityService;
+import com.nnk.springboot.utils.AuthenticationUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,34 +14,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import static com.nnk.springboot.enums.ViewEnum.*;
+
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractEntityController<E, C, R, U> {
+public abstract class AbstractEntityController<C, R, U> {
     private final String entityName;
-    private final AbstractEntityService<E, C, R, U> service;
+    private final EntityService<C, R, U> service;
 
     @GetMapping("/list")
     public String getList(final Model model) {
         log.info("get all {}s.", getEntityName());
         model.addAttribute(getEntityName() + "s", service.findAllEntity());
-        return getView("/list");
+        model.addAttribute("username", AuthenticationUtil.getAuthenticatedUsername());
+        return getView(LIST.getValue());
     }
 
     @GetMapping("/add")
     public String displayAddEntityForm(final Model model) {
         final C createEntityDto = createEntityDto();
         model.addAttribute(getEntityName(), createEntityDto);
-        return getView("/add");
+        return getView(ADD.getValue());
     }
-
-    @PostMapping("/validate")
-    public abstract String submitCreateForm(@Valid @ModelAttribute final C entityCreateDto, final BindingResult result);
 
     @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id, final Model model) {
         model.addAttribute(getEntityName(), service.getEntityUpdateDto(id));
-        return getView("/update");
+        return getView(UPDATE.getValue());
     }
+
+    @PostMapping("/validate")
+    public abstract String submitCreateForm(@Valid @ModelAttribute final C entityCreateDto, final BindingResult result);
 
     @PostMapping("/update/{id}")
     public abstract String updateEntity(@PathVariable("id") final Integer id,
@@ -55,7 +59,7 @@ public abstract class AbstractEntityController<E, C, R, U> {
         } catch (EntityNotFoundException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
-        return getRedirectedUrl("/list");
+        return getRedirectedUrl(LIST.getValue());
     }
 
     protected final String getRedirectedUrl(final String viewName) {

@@ -1,11 +1,9 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.dto.rating.RatingCreateDto;
 import com.nnk.springboot.dto.rating.RatingDto;
 import com.nnk.springboot.dto.rating.RatingUpdateDto;
-import com.nnk.springboot.service.impl.RatingService;
-import jakarta.persistence.EntityNotFoundException;
+import com.nnk.springboot.service.impl.RatingServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -13,17 +11,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Slf4j
 @RequestMapping("/rating")
-public class RatingController extends AbstractEntityController<Rating, RatingCreateDto, RatingDto, RatingUpdateDto> {
-    private final RatingService ratingService;
+public class RatingController extends AbstractEntityController<RatingCreateDto, RatingDto, RatingUpdateDto> {
+    private final RatingServiceImpl ratingServiceImpl;
 
-    public RatingController(RatingService ratingService) {
-        super("rating", ratingService);
-        this.ratingService = ratingService;
+    public RatingController(RatingServiceImpl ratingServiceImpl) {
+        super("rating", ratingServiceImpl);
+        this.ratingServiceImpl = ratingServiceImpl;
     }
 
     @Override
@@ -32,7 +29,7 @@ public class RatingController extends AbstractEntityController<Rating, RatingCre
         if (result.hasErrors()) {
             return getView("/add");
         }
-        ratingService.handleEntityCreation(ratingCreateDto);
+        ratingServiceImpl.handleEntityCreation(ratingCreateDto);
         return getRedirectedUrl("/list");
     }
 
@@ -43,7 +40,7 @@ public class RatingController extends AbstractEntityController<Rating, RatingCre
         if (result.hasErrors()) {
             return getView("/update");
         }
-        ratingService.handleEntityUpdate(ratingUpdateDto);
+        ratingServiceImpl.handleEntityUpdate(ratingUpdateDto);
         return getRedirectedUrl("/list");
     }
 
