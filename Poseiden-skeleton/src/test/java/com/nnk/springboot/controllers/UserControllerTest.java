@@ -3,7 +3,7 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.dto.user.UserCreateDto;
 import com.nnk.springboot.dto.user.UserDto;
 import com.nnk.springboot.dto.user.UserUpdateDto;
-import com.nnk.springboot.service.impl.UserService;
+import com.nnk.springboot.service.impl.UserServiceImpl;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Test
     @WithMockUser(username = "Admin", roles = "ADMIN")
@@ -63,7 +63,7 @@ class UserControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/user/list"));
 
-        verify(userService).handleEntityCreation(any(UserCreateDto.class));
+        verify(userServiceImpl).handleEntityCreation(any(UserCreateDto.class));
     }
 
     @Test
@@ -87,7 +87,7 @@ class UserControllerTest {
                 .andExpect(view().name("user/add"))
                 .andExpect(model().attributeHasFieldErrors("user", "username", "fullname", "role", "password"));
 
-        verify(userService, times(0)).handleEntityCreation(any(UserCreateDto.class));
+        verify(userServiceImpl, times(0)).handleEntityCreation(any(UserCreateDto.class));
     }
 
     @Test
@@ -99,7 +99,7 @@ class UserControllerTest {
         final String fullname = "fullname";
         final String user = "USER";
         final String password = "Password@1";
-        doThrow(new EntityExistsException("username already taken")).when(userService).handleEntityCreation(any(UserCreateDto.class));
+        doThrow(new EntityExistsException("username already taken")).when(userServiceImpl).handleEntityCreation(any(UserCreateDto.class));
 
         //when & then
         mockMvc.perform(post("/user/validate")
@@ -134,7 +134,7 @@ class UserControllerTest {
     void redirectToUserListAfterThrowEntityNotFoundException() throws Exception {
         //given
         final int userId = 1;
-        doThrow(new EntityNotFoundException("user not found")).when(userService).handleEntityDeletion(userId);
+        doThrow(new EntityNotFoundException("user not found")).when(userServiceImpl).handleEntityDeletion(userId);
 
         //when & then
         mockMvc.perform(get("/user/delete/" + userId)
@@ -171,7 +171,7 @@ class UserControllerTest {
                 .build();
 
         final List<UserDto> userDtoList = List.of(userDto1, userDto2);
-        given(userService.findAllEntity()).willReturn(userDtoList);
+        given(userServiceImpl.findAllEntity()).willReturn(userDtoList);
 
         //when & then
         mockMvc.perform(get("/user/list")
@@ -188,7 +188,7 @@ class UserControllerTest {
     void redirectToUserListEmpty() throws Exception {
         //given
         List<UserDto> emptyList = List.of();
-        given(userService.findAllEntity()).willReturn(emptyList);
+        given(userServiceImpl.findAllEntity()).willReturn(emptyList);
 
         //when & then
         mockMvc.perform(get("/user/list")
@@ -215,7 +215,7 @@ class UserControllerTest {
                 .role(role)
                 .build();
 
-        given(userService.getEntityUpdateDto(id)).willReturn(userUpdateDto);
+        given(userServiceImpl.getEntityUpdateDto(id)).willReturn(userUpdateDto);
 
         //when
         mockMvc.perform(get("/user/update/"+ id)
@@ -253,7 +253,7 @@ class UserControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/user/list"));
 
-        verify(userService).handleEntityUpdate(userUpdateDto);
+        verify(userServiceImpl).handleEntityUpdate(userUpdateDto);
     }
 
     @Test
@@ -273,7 +273,7 @@ class UserControllerTest {
                 .password(updatedPassword)
                 .role(role)
                 .build();
-        doThrow(new EntityExistsException("username already taken")).when(userService).handleEntityUpdate(userUpdateDto);
+        doThrow(new EntityExistsException("username already taken")).when(userServiceImpl).handleEntityUpdate(userUpdateDto);
 
         //when & then
         mockMvc.perform(post("/user/update/{id}", id)
@@ -315,6 +315,6 @@ class UserControllerTest {
                 .andExpect(view().name("user/update"))
                 .andExpect(model().attributeHasFieldErrors("user", "username", "fullname", "role", "password"));
 
-        verify(userService,times(0)).handleEntityUpdate(userUpdateDto);
+        verify(userServiceImpl,times(0)).handleEntityUpdate(userUpdateDto);
     }
 }

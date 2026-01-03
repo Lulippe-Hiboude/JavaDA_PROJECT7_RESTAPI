@@ -1,4 +1,4 @@
-package com.nnk.springboot.service;
+package com.nnk.springboot.service.impl;
 
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.repositories.UserRepository;
@@ -22,6 +22,7 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("loadUserByUsername : {}", username);
@@ -37,7 +38,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private List<GrantedAuthority> getGrantedAuthorities(final String role) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_"+role));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         log.debug("role : {}", role);
         return authorities;
     }

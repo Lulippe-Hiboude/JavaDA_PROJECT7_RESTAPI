@@ -32,28 +32,35 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/favicon.ico",
                                 "/",
-                                "/login"
+                                "/auth/login",
+                                "/auth/403"
                         ).permitAll()
                         .requestMatchers(
                                 "/home",
-                                "/bidList/list"
+                                "/bid/**",
+                                "/trade/**"
                         ).hasAnyRole("ADMIN","USER")
                         .requestMatchers(
                                 "/admin/home/**",
-                                "/curvePoint/list",
+                                "/curvePoint/**",
+                                "/ruleName/**",
+                                "/rating/**",
                                 "/user/**"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/auth/403")
+                )
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/login")
                         .successHandler(authenticationSuccessHandler())
-                        .failureUrl("/login?error=true")
+                        .failureUrl("/auth/login?error=true")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/app-logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/auth/login?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )

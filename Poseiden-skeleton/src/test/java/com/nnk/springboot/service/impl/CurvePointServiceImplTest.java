@@ -4,14 +4,16 @@ import com.nnk.springboot.domain.CurvePoint;
 import com.nnk.springboot.dto.curve.CurvePointCreateDto;
 import com.nnk.springboot.dto.curve.CurvePointDto;
 import com.nnk.springboot.dto.curve.CurvePointUpdateDto;
+import com.nnk.springboot.mapper.CurvePointMapper;
 import com.nnk.springboot.repositories.CurvePointRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,15 +28,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CurvePointServiceTest {
-    @InjectMocks
-    private CurvePointService curvePointService;
+class CurvePointServiceImplTest {
+
+    private CurvePointServiceImpl curvePointServiceImpl;
 
     @Mock
     private CurvePointRepository curvePointRepository;
 
     @Captor
     private ArgumentCaptor<CurvePoint> curvePointArgumentCaptor;
+
+    @BeforeEach
+    void setUp() {
+        final CurvePointMapper curvePointMapper = Mappers.getMapper(CurvePointMapper.class);
+        curvePointServiceImpl = new CurvePointServiceImpl(curvePointRepository, curvePointMapper);
+    }
 
     @Test
     @DisplayName("Should create a new rating")
@@ -49,7 +57,7 @@ class CurvePointServiceTest {
         curvePointCreateDto.setCurveId(curveId);
 
         //when
-        curvePointService.handleEntityCreation(curvePointCreateDto);
+        curvePointServiceImpl.handleEntityCreation(curvePointCreateDto);
 
         //then
         verify(curvePointRepository, times(1)).save(curvePointArgumentCaptor.capture());
@@ -90,7 +98,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findById(id)).willReturn(Optional.of(existingCurvePoint));
 
         //when
-        curvePointService.handleEntityUpdate(curvePointUpdateDto);
+        curvePointServiceImpl.handleEntityUpdate(curvePointUpdateDto);
 
         //then
         verify(curvePointRepository, times(1)).save(curvePointArgumentCaptor.capture());
@@ -110,7 +118,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findById(id)).willReturn(Optional.empty());
 
         //when & then
-        assertThrows(EntityNotFoundException.class, () -> curvePointService.handleEntityDeletion(id));
+        assertThrows(EntityNotFoundException.class, () -> curvePointServiceImpl.handleEntityDeletion(id));
         verify(curvePointRepository, times(0)).deleteById(id);
     }
 
@@ -133,7 +141,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findById(id)).willReturn(Optional.of(existingCurvePoint));
 
         //when
-        curvePointService.handleEntityDeletion(id);
+        curvePointServiceImpl.handleEntityDeletion(id);
 
         //then
         verify(curvePointRepository, times(1)).deleteById(id);
@@ -159,7 +167,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findAll()).willReturn(curvePointList);
 
         //when
-        List<CurvePointDto> curvePointDtoList = curvePointService.findAllEntity();
+        List<CurvePointDto> curvePointDtoList = curvePointServiceImpl.findAllEntity();
 
         //then
         assertEquals(1, curvePointDtoList.size());
@@ -173,7 +181,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findAll()).willReturn(curvePointList);
 
         //when
-        List<CurvePointDto> curvePointDtoList = curvePointService.findAllEntity();
+        List<CurvePointDto> curvePointDtoList = curvePointServiceImpl.findAllEntity();
 
         //then
         assertEquals(0, curvePointDtoList.size());
@@ -198,7 +206,7 @@ class CurvePointServiceTest {
         given(curvePointRepository.findById(id)).willReturn(Optional.of(curvePoint));
 
         //when
-        final CurvePointUpdateDto curvePointUpdateDto = curvePointService.getEntityUpdateDto(id);
+        final CurvePointUpdateDto curvePointUpdateDto = curvePointServiceImpl.getEntityUpdateDto(id);
 
         //then
         assertEquals(id, curvePointUpdateDto.getId());

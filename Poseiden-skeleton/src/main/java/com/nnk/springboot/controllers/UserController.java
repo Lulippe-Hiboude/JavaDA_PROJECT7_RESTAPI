@@ -1,12 +1,10 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.domain.User;
 import com.nnk.springboot.dto.user.UserCreateDto;
 import com.nnk.springboot.dto.user.UserDto;
 import com.nnk.springboot.dto.user.UserUpdateDto;
-import com.nnk.springboot.service.impl.UserService;
+import com.nnk.springboot.service.UserService;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -14,12 +12,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Log4j2
 @RequestMapping("/user")
-public class UserController extends AbstractEntityController<User, UserCreateDto, UserDto, UserUpdateDto> {
+public class UserController extends AbstractEntityController<UserCreateDto, UserDto, UserUpdateDto> {
 
     private final UserService userService;
 

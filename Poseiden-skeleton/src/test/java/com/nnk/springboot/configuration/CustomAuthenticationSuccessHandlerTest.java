@@ -8,6 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +19,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -54,7 +62,7 @@ class CustomAuthenticationSuccessHandlerTest {
     @Test
     @DisplayName("Login as a User should redirect to home")
     void loginAsAUserShouldRedirectToHome() throws Exception {
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/auth/login")
                         .param("username", "user")
                         .param("password", "password"))
                 .andExpect(status().is3xxRedirection())
@@ -64,7 +72,7 @@ class CustomAuthenticationSuccessHandlerTest {
     @Test
     @DisplayName("Login as a Admin should redirect to admin home")
     void loginAsAdminShouldRedirectToAdminHome() throws Exception {
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/auth/login")
                         .param("username", "admin")
                         .param("password", "password"))
                 .andExpect(status().is3xxRedirection())
@@ -91,7 +99,27 @@ class CustomAuthenticationSuccessHandlerTest {
     @DisplayName("an Admin should access admin home which is bidList")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void adminCanAccessAdminEndpoint() throws Exception {
-        mockMvc.perform(get("/bidList/list"))
+        mockMvc.perform(get("/bid/list"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("should redirect to login error if no role")
+    void shouldRedirectToLoginErrorWhenNoRole() throws IOException {
+        // Given
+        final CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler();
+        final MockHttpServletRequest request = new MockHttpServletRequest();
+        final  MockHttpServletResponse response = new MockHttpServletResponse();
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "user",
+                "password",
+                List.of()
+        );
+
+        //when
+        handler.onAuthenticationSuccess(request, response, auth);
+
+        // then
+        assertEquals("/auth/login?error", response.getRedirectedUrl());
     }
 }

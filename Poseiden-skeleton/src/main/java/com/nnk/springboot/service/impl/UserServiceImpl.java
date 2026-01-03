@@ -8,6 +8,7 @@ import com.nnk.springboot.mapper.UserMapper;
 import com.nnk.springboot.repositories.UserRepository;
 import com.nnk.springboot.service.AbstractEntityService;
 import com.nnk.springboot.service.EntityService;
+import com.nnk.springboot.service.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -16,7 +17,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -24,41 +24,36 @@ import java.util.function.BiFunction;
 @Service
 @Transactional
 @Slf4j
-public class UserService extends AbstractEntityService<User, UserCreateDto, UserDto, UserUpdateDto>
-        implements EntityService<UserCreateDto, UserDto, UserUpdateDto> {
+public class UserServiceImpl extends AbstractEntityService<User, UserCreateDto, UserDto, UserUpdateDto>
+        implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
-        super(userRepository);
+    public UserServiceImpl(final UserRepository userRepository, final UserMapper userMapper, final PasswordEncoder passwordEncoder) {
+        super(userRepository, userMapper);
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
-    protected void processEntityCreation(final UserCreateDto userCreatedto) {
-        userRepository.findByUsername(userCreatedto.getUsername())
+    @Override
+    protected void processEntityCreation(final UserCreateDto userCreateDto) {
+        userRepository.findByUsername(userCreateDto.getUsername())
                 .ifPresentOrElse(existingUser -> {
                             log.error("User already exists");
-                            throw new EntityExistsException("the username " + userCreatedto.getUsername() + " is already taken");
+                            throw new EntityExistsException("the username " + userCreateDto.getUsername() + " is already taken");
                         },
-                        () -> super.createEntity(userCreatedto));
+                        () -> createEntity(userCreateDto));
     }
 
+    @Override
     protected void handleError(final Integer id) {
         throw new EntityNotFoundException("the user with id " + id + " was not found");
     }
 
-    protected List<UserDto> toDtoList(final List<User> users) {
-
-        return UserMapper.INSTANCE.toUserDtoList(users);
-    }
-
-    protected UserUpdateDto getEntityUpdateDto(final User user) {
-        return UserMapper.INSTANCE.toUserUpdateDto(user);
-
-    }
-
+    @Override
     protected void checkEntityValidity(final UserUpdateDto userUpdateDto) {
         Optional<User> existingUser = userRepository.findByUsername(userUpdateDto.getUsername());
         if (isUsernameInvalid(userUpdateDto, existingUser)) {
@@ -66,10 +61,12 @@ public class UserService extends AbstractEntityService<User, UserCreateDto, User
         }
     }
 
+    @Override
     protected Integer getEntityId(final UserUpdateDto userUpdateDto) {
         return userUpdateDto.getId();
     }
 
+    @Override
     protected User getUpdatedEntity(final UserUpdateDto userUpdateDto, final User userToUpdate) {
         BiFunction<UserUpdateDto, User, User> mapper = getMapper(userUpdateDto);
         return mapper.apply(userUpdateDto, userToUpdate);
@@ -77,18 +74,23 @@ public class UserService extends AbstractEntityService<User, UserCreateDto, User
 
     private BiFunction<UserUpdateDto, User, User> getMapper(final UserUpdateDto userUpdateDto) {
         if (Strings.isBlank(userUpdateDto.getPassword())) {
-            return UserMapper.INSTANCE::toUser;
+            return userMapper::toEntity;
         }
 
         return (dto, user) -> {
             final String hashedPassword = passwordEncoder.encode(dto.getPassword());
-            return UserMapper.INSTANCE.toUser(dto, hashedPassword, user);
+            return userMapper.toUser(dto, hashedPassword, user);
         };
     }
 
-    protected User getEntity(final UserCreateDto userCreateDto) {
+    @Override
+    protected void createEntity(final UserCreateDto userCreateDto) {
+        entityRepository.save(getEntity(userCreateDto));
+    }
+
+    private User getEntity(final UserCreateDto userCreateDto) {
         final String hashedPassword = passwordEncoder.encode(userCreateDto.getPassword());
-        return UserMapper.INSTANCE.toUser(userCreateDto, hashedPassword);
+        return userMapper.toUser(userCreateDto, hashedPassword);
     }
 
     private static boolean isUsernameInvalid(final UserUpdateDto userUpdateDto, final Optional<User> existingUser) {

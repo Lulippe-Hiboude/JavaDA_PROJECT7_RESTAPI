@@ -4,9 +4,11 @@ import com.nnk.springboot.domain.User;
 import com.nnk.springboot.dto.user.UserCreateDto;
 import com.nnk.springboot.dto.user.UserDto;
 import com.nnk.springboot.dto.user.UserUpdateDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -17,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class UserMapperTest {
+
+    private UserMapper userMapper;
+
+    @BeforeEach
+    void setUp() {
+         userMapper = Mappers.getMapper(UserMapper.class);
+    }
 
     @Test
     @DisplayName("should map a userCreateDto to User")
@@ -35,7 +44,7 @@ class UserMapperTest {
                 .build();
 
         //when
-        final User expectedUser = UserMapper.INSTANCE.toUser(userCreateDto,hashedPassword);
+        final User expectedUser = userMapper.toUser(userCreateDto,hashedPassword);
 
         //then
         assertEquals(username,expectedUser.getUsername());
@@ -50,7 +59,7 @@ class UserMapperTest {
         //given
         final UserCreateDto userCreateDto = null;
         //when
-        final User expectedUser = UserMapper.INSTANCE.toUser(userCreateDto,null);
+        final User expectedUser = userMapper.toUser(userCreateDto,null);
 
         //then
         assertNull(expectedUser);
@@ -74,7 +83,7 @@ class UserMapperTest {
                 .build();
 
         //when
-        final UserDto userDto = UserMapper.INSTANCE.toUserDto(user);
+        final UserDto userDto = userMapper.toEntityDto(user);
 
         //then
         assertEquals(id,userDto.getId());
@@ -125,7 +134,7 @@ class UserMapperTest {
         final List<User> userList = List.of(user, user2);
 
         //when
-        final List<UserDto> userDtoList = UserMapper.INSTANCE.toUserDtoList(userList);
+        final List<UserDto> userDtoList = userMapper.toDtoList(userList);
 
         //then
         assertEquals(2, userDtoList.size());
@@ -142,7 +151,7 @@ class UserMapperTest {
         final List<User> userList = List.of();
 
         //when
-        final List<UserDto> userDtoList = UserMapper.INSTANCE.toUserDtoList(userList);
+        final List<UserDto> userDtoList = userMapper.toDtoList(userList);
 
         //then
         assertEquals(0, userDtoList.size());
@@ -151,7 +160,7 @@ class UserMapperTest {
     @Test
     @DisplayName("should return null if user is null")
     void shouldReturnNullIfUserIsNull() {
-        final UserDto userDto = UserMapper.INSTANCE.toUserDto(null);
+        final UserDto userDto = userMapper.toEntityDto(null);
         assertNull(userDto);
     }
 
@@ -184,7 +193,7 @@ class UserMapperTest {
                 .role(updatedRole)
                 .build();
         //when
-        final User updatedUser = UserMapper.INSTANCE.toUser(userUpdateDto,updatedHashedPassword,existingUser);
+        final User updatedUser = userMapper.toUser(userUpdateDto,updatedHashedPassword,existingUser);
 
         //then
         assertEquals(id,updatedUser.getId());
@@ -222,7 +231,7 @@ class UserMapperTest {
                 .role(updatedRole)
                 .build();
         //when
-        final User updatedUser = UserMapper.INSTANCE.toUser(userUpdateDto,existingUser);
+        final User updatedUser = userMapper.toEntity(userUpdateDto,existingUser);
 
         //then
         assertEquals(id,updatedUser.getId());
@@ -250,7 +259,7 @@ class UserMapperTest {
                 .build();
 
         //when
-        final UserUpdateDto userUpdateDto = UserMapper.INSTANCE.toUserUpdateDto(existingUser);
+        final UserUpdateDto userUpdateDto = userMapper.toUpdateDto(existingUser);
 
         //then
         assertEquals(id,userUpdateDto.getId());
