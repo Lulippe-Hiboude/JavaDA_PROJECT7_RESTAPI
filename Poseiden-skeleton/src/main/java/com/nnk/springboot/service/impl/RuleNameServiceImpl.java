@@ -7,7 +7,6 @@ import com.nnk.springboot.dto.rule_name.RuleNameUpdateDto;
 import com.nnk.springboot.mapper.RuleNameMapper;
 import com.nnk.springboot.repositories.RuleNameRepository;
 import com.nnk.springboot.service.AbstractEntityService;
-import com.nnk.springboot.service.EntityService;
 import com.nnk.springboot.service.RuleNameService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
