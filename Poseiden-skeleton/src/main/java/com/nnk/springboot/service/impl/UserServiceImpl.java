@@ -7,7 +7,6 @@ import com.nnk.springboot.dto.user.UserUpdateDto;
 import com.nnk.springboot.mapper.UserMapper;
 import com.nnk.springboot.repositories.UserRepository;
 import com.nnk.springboot.service.AbstractEntityService;
-import com.nnk.springboot.service.EntityService;
 import com.nnk.springboot.service.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;

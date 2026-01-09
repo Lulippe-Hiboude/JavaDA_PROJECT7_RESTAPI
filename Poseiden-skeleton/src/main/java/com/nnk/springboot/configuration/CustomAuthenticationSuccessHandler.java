@@ -12,7 +12,6 @@ import java.util.Arrays;
 
 import static com.nnk.springboot.enums.PathEnum.*;
 import static com.nnk.springboot.enums.RoleEnum.ROLE_ADMIN;
-import static com.nnk.springboot.enums.RoleEnum.ROLE_USER;
 
 /**
  * Custom authentication success handler used by Spring Security.
@@ -99,7 +98,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
      *
      * @param role the role to validate
      * @return {@code true} if the role exists in {@code RoleEnum},
-     *         {@code false} otherwise
+     * {@code false} otherwise
      */
     private static boolean isAnExistingRole(String role) {
         return Arrays.stream(RoleEnum.values())

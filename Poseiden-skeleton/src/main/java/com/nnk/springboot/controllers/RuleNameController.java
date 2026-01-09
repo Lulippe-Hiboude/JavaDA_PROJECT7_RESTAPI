@@ -4,7 +4,6 @@ import com.nnk.springboot.dto.rule_name.RuleNameCreateDto;
 import com.nnk.springboot.dto.rule_name.RuleNameDto;
 import com.nnk.springboot.dto.rule_name.RuleNameUpdateDto;
 import com.nnk.springboot.service.RuleNameService;
-import com.nnk.springboot.service.impl.RuleNameServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -12,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import static com.nnk.springboot.enums.ViewEnum.*;
 
 @Controller
